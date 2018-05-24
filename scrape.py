@@ -9,7 +9,7 @@ def __main__():
     for b in base:
         print('===== SCRAPING BASE PAGE =====', b)
         for idx in range(1, 999):
-            url = b + 'index/' + str(idx) + '/date/desc'
+            url = b + 'index/date/desc/' + str(idx)
             print('=== Sub Scrape ===', url)
             base_done = False
             try:

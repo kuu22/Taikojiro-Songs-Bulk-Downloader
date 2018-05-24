@@ -1,3 +1,4 @@
+# coding=UTF-8
 from bs4 import BeautifulSoup as bs
 from io import BytesIO, TextIOWrapper
 import requests
@@ -6,6 +7,7 @@ import os
 import codecs
 import sys
 import shutil
+import re
 
 FILE_LOCATIONS = ['fumen/arcade/', 'fumen/easy/', 'fumen/custom/', 'fumen/other/']
 TMP_DIR = 'tmp/'
@@ -43,10 +45,10 @@ def __main__():
                 with requests.Session() as session:
                     session.headers.update(headers)
                     r = session.get(url)
-                    soup = bs(r.content)
-                    post_data = {'token': soup.find('form', {'name': 'agree'}).input.get('value')}
+                    soup = bs(r.content, "html.parser")
+                    post_data = {'token': soup.find('input', {'type': 'hidden', 'name': 'token'})['value']}
                     response = session.post(url, data=post_data)
-                    dl_link = bs(response.content).find('a', {'class': 'download'}).get('href')
+                    dl_link = bs(response.content, "html.parser").find('a', {'title': re.compile(r'\S*をダウンロード')})['href']
                     dl = session.get(dl_link, stream=True)
 
                     zfile = zipfile.ZipFile(BytesIO(dl.content))
